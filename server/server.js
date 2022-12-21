@@ -15,64 +15,15 @@ app.use(cors());
 app.use(express.json());
 
 
-const io = require("socket.io")(3002, {
-    cors: {
-        //! this is the port where frontend is working
-        origin: "http://localhost:3000",
-        methods: ["GET", "POST"],
-    },
-})
-
-const defaultValue = ""
-
-
-io.on("connection", socket => {
-
-
-    socket.on('get-document', async (documentId, userID) => {
-        const document = await findorCreateDocument(documentId, userID)
-        socket.join(documentId)
-
-        console.log('document.data = ', document.data)
-
-        socket.emit("load-document", document.data)
-
-        // will show when our client would have connected with our server
-        socket.on('send-changes', delta => {
-
-            // this will print all the changes we are doing in our editor page like adding text, bolding text , breaking a new line others...
-
-            // console.log(delta)
-            // asking all others to receive changes that we have made .
-            socket.broadcast.to(documentId).emit("receive-changes", delta)
-        })
-        console.log("connected")
-
-        // updating and saving the data here
-        socket.on("save-document", async data => {
-            await Document.findByIdAndUpdate(documentId, { data })
-        })
-    })
-})
-
-// Finding the document using id
-async function findorCreateDocument(id, userid) {
-    if (id == null) return
-
-    const document = await Document.findById(id)
-    if (document) return document
-
-    // !this is the point where we would be sharing the userid 
-
-    return await Document.create({ _id: id, data: defaultValue, userID: userid });
-
-}
 
 
 // our apps routes are going to be here.
 
 app.use('/api/auth', require('./routes/auth.js'))
 app.use('/api/blog', require('./routes/blog'))
+app.use('/api/newblog', require('./routes/addblogio'))
+
+
 
 // // static files will be connected here
 // app.use(express.static(path.join(__dirname, '../frontend/build')));

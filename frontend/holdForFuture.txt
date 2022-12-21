@@ -23,3 +23,92 @@
     {/* {userblogs.map((e, index) => 
                 ShowBlogs(index)
             )} */}
+
+
+
+
+    // const [state, dispatch] = useReducer(x => x + 1, 0)
+
+    and then calling 
+    https://www.youtube.com/watch?v=Nxe-9PkP8Nw
+
+
+    quill editor stuff
+    
+    // useEffect(() => {
+
+
+    //     if (quill == null) return;
+
+    //     quill.on('text-change', function (delta, oldDelta, source) {
+
+    //         if (source == 'api') {
+    //             console.log("An API call triggered this change.");
+    //         } else if (source == 'user') {
+    //             console.log("A user action triggered this change.");
+    //         }
+
+    //         setNewdocdata({ ...newdocdata, oldDelta });
+    //     });
+
+
+
+    // }, [quill])
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import React, { useContext, useEffect } from 'react'
+import Navbar from '../Navbar'
+import userContext from '../context/Users/userContext'
+
+const UserDrafts = () => {
+    let context = useContext(userContext);
+
+    let { userblogs, GetUserBlogs } = context;
+
+    //! You can call the fetch api like this and update the context state it is just that the state will not show that change when printed just after the fetch api call thought it would have been updated and calling fetch api like this would also solve the problem of reloading/refreshing and losing data.
+
+
+    useEffect(() => {
+
+        async function call() {
+            await GetUserBlogs(localStorage.getItem('token'));
+        }
+
+        call();
+
+    }, [])
+
+    console.log(userblogs)
+    return (
+        <>
+            <Navbar dissavedocument='none' />
+
+            {userblogs.map((e, index) => {
+                return (<div key={index}>
+                    <div>mohit saini</div>
+                </div>)
+            })}
+
+
+        </>
+    )
+}
+
+export default UserDrafts
+    

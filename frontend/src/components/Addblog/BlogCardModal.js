@@ -18,14 +18,14 @@ import useDrivePicker from 'react-google-drive-picker';
 
 
 
-export default function BlogCardModal() {
+export default function BlogCardModal(props) {
     const [open, setOpen] = useState(false);
 
     const docContext = useContext(documentContext);
-    let { blogcardmodalref,SaveBlogCard } = docContext;
+    let { blogcardmodalref, SaveBlogCard, saveblogwithcardsubmitref } = docContext;
 
 
-    const [blogcardinfo, setBlogcardinfo] = useState({userID:"", blogID: "", title: "", description: "", thumbnailurl: "", tag: "" })
+    const [blogcardinfo, setBlogcardinfo] = useState({ userID: "", blogID: "", title: "", description: "", thumbnailurl: "", tag: "" })
 
 
     //? code for uploading image to my google Drive
@@ -46,7 +46,7 @@ export default function BlogCardModal() {
         openPicker({
             clientId: "177356393773-nl4q6rhgd65f6049oh5q8enmsqoqecqm.apps.googleusercontent.com",
             developerKey: "AIzaSyDKH9fgVU2p26eabmHdJffvi1hjkeL2Ad4",
-            token:  "ya29.a0AeTM1ifY9JApkv3yYupaoxLPN8m4BzcxIgHiB3Q2NVUIefCTzSmlv7Yv62jeVqZGPMzT9XkJYnlajX1W4V55u7NnvPChhdPuj46fpJ7KNbho-9LLtAtOyKUMEQQhRlM5I8uxysqMYsS2hzMLuyvxrADwue0TaCgYKAYoSARISFQHWtWOmaun86Y-srn97XlNuATYt2A0163"    ,
+            token: "ya29.a0AX9GBdUv_GGjQ0N6rm7Y7jdm2jspAlz4aOGlcX03bUA-SnAqc0fvwcs6IV7FyNW8x2MkN9aD-lhhdxVDIC89qE1U7wybZxPdvHoo5XBPR5kNV0Z3OFKefNnSH02il65gZHPDBc5hXTsMrLduEwo1VWIbB8DBaCgYKAW8SAQ8SFQHUCsbCr2PIX6O3dph9WuVyEod4Ig0163",
             viewId: "DOCS",
             showUploadView: true,
             showUploadFolders: true,
@@ -59,7 +59,7 @@ export default function BlogCardModal() {
                     console.log('User clicked cancel/close button')
                 }
                 console.log('Data About uploaded Image : ', data)
-                
+
                 setBlogcardinfo({ ...blogcardinfo, thumbnailurl: data.docs[0].url })
                 setModaldis('block')
             },
@@ -71,20 +71,27 @@ export default function BlogCardModal() {
         setBlogcardinfo({ ...blogcardinfo, [e.target.name]: e.target.value })
     }
 
-    const handlesubmit =async  () => {
+    const handlesubmit = async () => {
         console.log(blogcardinfo);
 
-        const json= await SaveBlogCard(blogcardinfo);
+
+        saveblogwithcardsubmitref.current.click();
+
+        const json = await SaveBlogCard(blogcardinfo);
         console.log('response after saving blogcard : ', json);
         if (json.success) {
             console.log("Card saving successful");
         }
+
+
+        // documentId, data, userID
+        // UpdateDocument(id, props.data, localStorage.getItem('userID'))
     }
 
     useEffect(() => {
-        setBlogcardinfo({ ...blogcardinfo,userID: localStorage.getItem('userID'),blogID: id})
+        setBlogcardinfo({ ...blogcardinfo, userID: localStorage.getItem('userID'), blogID: id })
     }, [])
-    
+
 
 
 

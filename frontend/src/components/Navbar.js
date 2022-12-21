@@ -47,18 +47,19 @@ const Navbar = (props) => {
     }
 
     // ! for opening the blogcard form via modal
-    let { blogcardmodalref, check2 } = docContext;
+    let { blogcardmodalref, check2, saveasdraftref } = docContext;
     const handlecreatecard = () => {
         console.log(check2)
         blogcardmodalref.current.click();
     }
 
-    const handleAllblogs = async () => {
+
+    const handleMyDrafts = async () => {
         handleClose();
 
-        await GetUserBlogs(localStorage.getItem('token'));
+        // await GetUserBlogs(localStorage.getItem('token'));
 
-        navigate('/myblogs')
+        navigate('/mydrafts')
     }
 
     return (
@@ -87,8 +88,8 @@ const Navbar = (props) => {
                         <Link to='/addblog'>
                             <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: disaddblog }}>Add your blog</Button>
                         </Link>
-                        <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: dissavedocument }} onClick={handlecreatecard}>Create Card</Button>
 
+                        <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: dissavedocument }} onClick={handlecreatecard}>Save Blog</Button>
 
 
                         <Avatar sx={{
@@ -112,7 +113,8 @@ const Navbar = (props) => {
                         >
                             <MenuItem onClick={handleClose}>Profile</MenuItem>
                             <MenuItem onClick={handleMyBlogs}>My Blogs Cards</MenuItem>
-                            <MenuItem onClick={handleAllblogs}>My All Blogs</MenuItem>
+                            <MenuItem onClick={handleMyDrafts}>My Drafts</MenuItem>
+
                             {localStorage.getItem('token') ? <MenuItem onClick={handlelogout}>Logout</MenuItem> : <div></div>}
 
                         </Menu>

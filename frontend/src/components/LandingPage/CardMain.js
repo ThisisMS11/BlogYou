@@ -10,21 +10,21 @@ import Typography from '@mui/joy/Typography';
 import BookmarkAdd from '@mui/icons-material/BookmarkAddOutlined';
 import documentContext from '../context/documents/documentContext';
 import userContext from '../context/Users/userContext';
-import { Link ,useNavigate} from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function CardMain(props) {
     let { title, description, thumbnailurl, tag, blogid } = props;
 
-    const context=useContext(userContext);
+    const context = useContext(userContext);
 
     let { GetBlogwithID } = context;
 
-    const navigate=useNavigate();
+    const navigate = useNavigate();
 
-    const handlereadmore = async () => {
-        await GetBlogwithID(blogid);
+    const handlereadmore = async (id) => {
+        await GetBlogwithID(id);
         // /blogs/:id
-        navigate(`/blogs/${blogid}`)
+        navigate(`/blogs/${id}`)
     }
 
     return (
@@ -68,12 +68,12 @@ export default function CardMain(props) {
                         color="primary"
                         aria-label="Explore Bahamas Islands"
                         sx={{ ml: 'auto', fontWeight: 600 }}
-                        onClick={handlereadmore}
+                        onClick={() => handlereadmore(blogid)}
                     >
                         Read More
                     </Button>
                 </Box>
             </Card>
-        </CssVarsProvider>
+        </CssVarsProvider >
     );
 }

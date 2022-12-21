@@ -6,11 +6,21 @@ import userContext from '../Users/userContext';
 const DocumentState = (props) => {
     const [check2, setCheck2] = useState("Hello check2");
 
-    const blogcardmodalref = useRef(null);
 
+    // !references 
+    const blogcardmodalref = useRef(null);
+    const saveblogwithcardsubmitref = useRef(null);
+
+    
+    
+    
     const [allcards, setAllcards] = useState([]);
 
     const [usercards, setUsercards] = useState([]);
+
+
+    const [freshdocument, setFreshdocument] = useState([]);
+
 
 
     const context = useContext(userContext);
@@ -33,6 +43,9 @@ const DocumentState = (props) => {
         }
         return id;
     }
+
+
+    // ^<---------------------------------Cards--------------------------------------------->
 
     // ! For saving newly created blog's card.
     const SaveBlogCard = async (blogcardinfo) => {
@@ -90,8 +103,52 @@ const DocumentState = (props) => {
         setLoading(false);
     }
 
+
+    //^ <--------------------------------  Document=blog------------------------------------->
+
+
+    // !Creating a new document
+    const GiveDocument = async (documentId, userID) => {
+        setLoading(true);
+        const response = await fetch("http://localhost:1983/api/newblog/createblog", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userID: userID,
+                documentId: documentId
+            })
+        }).then((response) => response.json())
+            .then((data) => setFreshdocument(data));
+
+        setLoading(false);
+    }
+
+
+    // ! for updating the content of a document based on id.
+
+    const UpdateDocument = async (documentId, data, userID) => {
+        setLoading(true);
+        const response = await fetch(`http://localhost:1983/api/newblog/updatedoc/${documentId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                userID: userID,
+                data: data
+            })
+        }).then((response) => response.json())
+            .then((data) => console.log(data));
+
+        setLoading(false);
+    }
+
+
+
     return (
-        <documentContext.Provider value={{ check2, blogcardmodalref, SaveBlogCard, GetAllCards, allcards, usercards, setUsercards, GetUserCards, giveid ,loading, setLoading}}>
+        <documentContext.Provider value={{ check2, blogcardmodalref, SaveBlogCard, GetAllCards, allcards, usercards, setUsercards, GetUserCards, giveid, loading, setLoading, GiveDocument, freshdocument, setFreshdocument, UpdateDocument, saveblogwithcardsubmitref }}>
             {props.children}
         </documentContext.Provider>
     )

@@ -1,20 +1,23 @@
-import React, { useEffect, useContext, useCallback, useState } from 'react'
+import React, { useEffect, useContext, useCallback, useState, useImperativeHandle } from 'react'
 import userContext from '../context/Users/userContext'
 // quill imports
 import Quill from 'quill'
 import "quill/dist/quill.snow.css"
 import "./styles.css"
-
+import { useParams } from 'react-router-dom'
 import { eventWrapper } from '@testing-library/user-event/dist/utils'
 import Navbar from '../Navbar'
 
 const BlogwithID = () => {
 
     const context = useContext(userContext);
-    let { userblogs, blogwithid } = context;
+    let { blogwithid } = context;
 
+
+    // let { id } = useParams();
 
     useEffect(() => {
+
         console.log('id specific blog is here :- ', blogwithid)
     }, [blogwithid])
 
@@ -48,15 +51,14 @@ const BlogwithID = () => {
             }
         })
 
-        console.log("q  = ", q);
 
 
         // Setting the contents of the quill here.
-        q.setContents(blogwithid[0].data.ops)
+        q.setContents(blogwithid[0].data)
 
     }, [])
 
-
+    console.log(blogwithid)
     return (
         <>
             <Navbar dissavedocument='none' />

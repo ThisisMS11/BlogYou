@@ -1,8 +1,7 @@
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext, useReducer } from 'react'
 import Quill from 'quill'
 import "quill/dist/quill.snow.css"
 import "./styles.css"
-import { io } from 'socket.io-client'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import ImageResize from 'quill-image-resize-module-react';
@@ -10,14 +9,18 @@ import BlogCardModal from './BlogCardModal'
 import Navbar from '../Navbar'
 import userContext from '../context/Users/userContext'
 import Spinner from '../Utility_Components/Spinner'
+import documentContext from '../context/documents/documentContext'
 
 
 const TextEditor = () => {
 
+
+
+
+
     // here we are renaming the id to documentId 
     // * Our params contains the id of our document.
     const { id: documentId } = useParams();
-    const [socket, setSocket] = useState();
     const [quill, setQuill] = useState();
 
     // console.log(documentId);
@@ -25,84 +28,24 @@ const TextEditor = () => {
     const context = useContext(userContext);
     let { loading, setLoading } = context;
 
-    useEffect(() => {
-        setLoading(true);
-        const s = io("http://localhost:3002");
-        setSocket(s);
+    const docContext = useContext(documentContext);
+    let { GiveDocument, freshdocument, UpdateDocument, saveblogwithcardsubmitref } = docContext;
 
-        return () => {
-            s.disconnect();
-        }
+
+    const [newdocdata, setNewdocdata] = useState([]);
+
+
+    useEffect(() => {
+        GiveDocument(documentId, localStorage.getItem('userID'));
+        // dispatch();
     }, [])
 
-    useEffect(() => {
-        if (socket == null || quill == null) return
-
-        socket.once("load-document", documents => {
-            quill.setContents(documents)
-            quill.enable();
-        })
-
-        socket.emit('get-document', documentId, localStorage.getItem('userID'))
-
-        setLoading(false)
-    }, [socket, quill, documentId])
-
-    useEffect(() => {
-        if (socket == null || quill == null) return
-
-        const handler = (delta, oldDelta, source) => {
-            if (source !== 'user') return
-            socket.emit("send-changes", delta)
-        }
-
-        quill.on('text-change', handler)
-
-        return () => {
-            quill.off('text-change', handler)
-        }
-    }, [socket, quill])
 
 
-    // ? This one to receive and update the changes done to the system
-    useEffect(() => {
-        if (socket == null || quill == null) return
-
-        const handler = (delta) => {
-            quill.updateContents(delta)
-        }
-
-        socket.on('receive-changes', handler)
-
-        return () => {
-            quill.off('receive-changes', handler)
-        }
-    }, [socket, quill])
-
-    // !for saving and updating the document
-    useEffect(() => {
-        if (socket == null || quill == null) return;
-
-        const interval = setInterval(() => {
-            socket.emit('save-document', quill.getContents())
-        }, 2000);
-
-        return () => {
-            clearInterval(interval)
-        }
-    }, [socket, quill])
-
-
-    //!the problem with this type of useeffect calls is that every time any changes are made to our react app it will re-render our toolbar without cleaning up the already present toolbar resulting in multiple toolbars appearing on our main screen.
-    // useEffect(() => {
-    //     new Quill("#container", { theme: "snow" })
-    // }, [])
-
-    // ?so as a solution we must wrap up all the multiple toolbars and textarea within a single div and clean up the entire div before every re-render. 
-
-    // we can't use useEffect because it sometimes gets run even before all the ref are properly set so instead we can use useCallback
 
     const wrapperRef = useCallback(wrapper => {
+
+        setLoading(true)
         if (wrapper == null) return;
         wrapper.innerHTML = ''
         const editor = document.createElement("div");
@@ -125,13 +68,54 @@ const TextEditor = () => {
             }
         })
 
-        q.disable()
-        q.setText('Loading...')
 
+        // ! adding the save draft button to our toolbar
+
+        const toolbar = Array.from(document.getElementsByClassName('.ql-toolbar'));
+
+
+        let tool = wrapper.children[0];
+
+        const button = document.createElement('button');
+
+
+        button.innerHTML = 'Save Draft';
+        button.id = 'savedraftbutton'
+
+        button.onclick = () => {
+            saveblogwithcardsubmitref.current.click();
+        }
+
+        tool.appendChild(button)
+
+
+
+
+
+        setLoading(false);
 
         setQuill(q)
 
+        console.log("freshdocument = ", freshdocument)
+
+
+        q.setText("loading...")
+        q.setContents(freshdocument)
+        q.enable();
+
+
+        // button.addEventListener('click', () => {
+        //     // showmequill()
+        //     console.log(newdocdata)
+
+        // })
+
+
     }, [])
+
+
+
+
 
 
 
@@ -150,15 +134,35 @@ const TextEditor = () => {
         ['clean']
     ]
 
+    const showmequill = () => {
+
+
+        console.log("quill content : ", quill.getContents().ops);
+        // quill.getText();
+
+        UpdateDocument(documentId, quill.getContents().ops, localStorage.getItem('userID'))
+
+    }
+
+
+
+
+
     return (
         <>
             <Navbar disaddblog='none' />
-            {loading && <Spinner />}
+            {/* {loading && <Spinner />} */}
 
             <div className='container  border-red-400 mx-auto' ref={wrapperRef}></div>
 
 
+            {/* <BlogCardModal /> */}
+
             <BlogCardModal />
+
+
+
+            <div onClick={showmequill} ref={saveblogwithcardsubmitref} className='text-center hidden border-2 border-black rounded-lg mx-auto bg-black text-white py-1 cursor-pointer w-[8.5in]' >Save Draft</div>
         </>
     )
 }

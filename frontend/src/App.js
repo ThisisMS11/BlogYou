@@ -20,6 +20,7 @@ import ImageUpload from './components/ImageUpload';
 import CardIdea2 from './components/LandingPage/CardMain';
 import UserblogCards from './components/UserBlogs/UserblogCards';
 import BlogwithID from './components/UserBlogs/BlogwithID';
+import UserDrafts from './components/UserBlogs/UserDrafts';
 
 function App() {
   return (
@@ -45,8 +46,15 @@ function App() {
 
               <Route exact path="/myblogscards" element={<UserblogCards />} />
 
+              {/* for serving the drafts of the users */}
+              <Route exact path="/mydrafts" element={<UserDrafts />} />
+
+
               <Route exact path="/uploadimg" element={<ImageUpload />} />
+              
               <Route exact path="/card2" element={<CardIdea2 />} />
+
+
             </Routes>
 
             <Footer />

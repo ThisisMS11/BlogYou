@@ -1,0 +1,10 @@
+Addnewblog = Generates a new blog or if blog with that id already exists it lets to edit it.
+if a new blog is created in Addnewblog it is saved in the database simultaneously as well.
+
+
+Save Blog = Saves a Card for the Blog. (blog is already saved in the database)
+
+on clicking on "save drafts" the document will be updated with the content added by the user.
+
+
+myblogs is replaced by blogwithid
