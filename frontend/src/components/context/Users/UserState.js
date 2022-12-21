@@ -3,6 +3,9 @@ import { useState } from 'react';
 
 const UserState = (props) => {
 
+    // * true== lightTheme and false== darkTheme
+    const [maintheme, setMaintheme] = useState(true);
+
     /*All the useState hooks are here*/
     const [userblogs, setUserblogs] = useState([]);  //! for all user blogs
 
@@ -133,7 +136,7 @@ const UserState = (props) => {
 
 
     return (
-        <userContext.Provider value={{ HandleLogin, HandleSignup, GetUserInfo, GetUserBlogs, userblogs, setUserblogs, blogwithid, setBlogwithid, GetBlogwithID, progress, setprogress, loading, setLoading }}>
+        <userContext.Provider value={{ HandleLogin, HandleSignup, GetUserInfo, GetUserBlogs, userblogs, setUserblogs, blogwithid, setBlogwithid, GetBlogwithID, progress, setprogress, loading, setLoading, maintheme, setMaintheme }}>
             {props.children}
         </userContext.Provider>
     )

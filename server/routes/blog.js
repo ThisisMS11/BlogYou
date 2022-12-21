@@ -106,7 +106,7 @@ router.post('/saveblogcard', async (req, res) => {
 
 router.delete('/deletecard/:id', async (req, res) => {
     let todelete = await blogcard.findById(req.params.id);
-    console.log(todelete.userID.toString());
+    // console.log(todelete.userID.toString());
 
     if (!todelete) {
         res.status(404).send("Not found ");

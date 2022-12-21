@@ -46,7 +46,7 @@ export default function BlogCardModal(props) {
         openPicker({
             clientId: "177356393773-nl4q6rhgd65f6049oh5q8enmsqoqecqm.apps.googleusercontent.com",
             developerKey: "AIzaSyDKH9fgVU2p26eabmHdJffvi1hjkeL2Ad4",
-            token: "ya29.a0AX9GBdUv_GGjQ0N6rm7Y7jdm2jspAlz4aOGlcX03bUA-SnAqc0fvwcs6IV7FyNW8x2MkN9aD-lhhdxVDIC89qE1U7wybZxPdvHoo5XBPR5kNV0Z3OFKefNnSH02il65gZHPDBc5hXTsMrLduEwo1VWIbB8DBaCgYKAW8SAQ8SFQHUCsbCr2PIX6O3dph9WuVyEod4Ig0163",
+            token: "ya29.a0AX9GBdXtbSxoRIMXYJuK70xTLmXkzWAbUUxjbsC8kJsyu0YBpiz190yKPeLCcuVLdh1Wykbh-BeePIvAC_RE99WkMGXGkXB6_zRdRyNX5hkwu2wtOxb6wDqUNetz0xtcpfX47nrYWQZKscEYHYEy0dYaWQ-_aCgYKAdsSAQ8SFQHUCsbC1X-63dwBZji2yC9GRMqv7w0163", 
             viewId: "DOCS",
             showUploadView: true,
             showUploadFolders: true,

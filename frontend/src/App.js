@@ -22,46 +22,71 @@ import UserblogCards from './components/UserBlogs/UserblogCards';
 import BlogwithID from './components/UserBlogs/BlogwithID';
 import UserDrafts from './components/UserBlogs/UserDrafts';
 
+
+// themeing part from mui
+import { Theme, ThemeProvider, createTheme, colors } from '@mui/material';
+import GAuth from './components/Utility_Components/Google/GAuth';
+
 function App() {
+
+  const font = "'Ubuntu', sans-serif";
+
+  const theme = createTheme({
+    palette: {
+      secondary: {
+        main: '#000000'
+      }
+    },
+    typography: {
+      fontFamily: font,
+    }
+  })
+
   return (
     <>
-      <UserState>
-        <DocumentState>
-          <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <UserState>
+          <DocumentState>
+            <BrowserRouter>
 
-            {/* <Navbar /> */}
-            <Routes>
-              <Route exact path='/' element={<CardBox />}></Route>
-              <Route exact path='/article' element={<Article />}></Route>
-              <Route exact path='/login' element={<Login />}></Route>
-              <Route exact path='/signup' element={<Signup />}></Route>
-
-
-              {/* <Route exact path='/addblog' element={<TextEditor />}></Route> */}
-
-              <Route exact path="/addblog" element={<Navigate replace to={`documents/${uuidV4()}`} />} />
-              <Route exact path="/addblog/documents/:id" element={<TextEditor />} />
-
-              <Route exact path="/blogs/:id" element={<BlogwithID />} />
-
-              <Route exact path="/myblogscards" element={<UserblogCards />} />
-
-              {/* for serving the drafts of the users */}
-              <Route exact path="/mydrafts" element={<UserDrafts />} />
+              {/* <Navbar /> */}
+              <Routes>
+                <Route exact path='/' element={<CardBox />}></Route>
+                <Route exact path='/article' element={<Article />}></Route>
+                <Route exact path='/login' element={<Login />}></Route>
+                <Route exact path='/signup' element={<Signup />}></Route>
 
 
-              <Route exact path="/uploadimg" element={<ImageUpload />} />
-              
-              <Route exact path="/card2" element={<CardIdea2 />} />
+                {/* <Route exact path='/addblog' element={<TextEditor />}></Route> */}
+
+                <Route exact path="/addblog" element={<Navigate replace to={`documents/${uuidV4()}`} />} />
+                <Route exact path="/addblog/documents/:id" element={<TextEditor />} />
+
+                <Route exact path="/blogs/:id" element={<BlogwithID />} />
+
+                <Route exact path="/myblogscards" element={<UserblogCards />} />
+
+                {/* for serving the drafts of the users */}
+                <Route exact path="/mydrafts" element={<UserDrafts />} />
 
 
-            </Routes>
+                <Route exact path="/uploadimg" element={<ImageUpload />} />
 
-            <Footer />
+                <Route exact path="/card2" element={<CardIdea2 />} />
 
-          </BrowserRouter>
-        </DocumentState>
-      </UserState>
+
+                <Route exact path="/gauth" element={<GAuth />} />
+
+
+              </Routes>
+
+              <Footer />
+
+            </BrowserRouter>
+          </DocumentState>
+        </UserState>
+
+      </ThemeProvider>
     </>
   );
 }

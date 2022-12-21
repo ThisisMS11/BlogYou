@@ -13,6 +13,8 @@ import MenuItem from '@mui/material/MenuItem';
 import userContext from './context/Users/userContext';
 import documentContext from './context/documents/documentContext';
 import LoadingBar from 'react-top-loading-bar'
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import LightModeIcon from '@mui/icons-material/LightMode';
 
 const Navbar = (props) => {
     let { disaddblog, dissavedocument, disavatar } = props;
@@ -37,7 +39,7 @@ const Navbar = (props) => {
     // Fetching the user notes here.
     const context = useContext(userContext);
     const docContext = useContext(documentContext);
-    let { GetUserBlogs, progress, setprogress } = context;
+    let { maintheme, setMaintheme } = context;
 
 
     const handleMyBlogs = async () => {
@@ -67,8 +69,8 @@ const Navbar = (props) => {
         <>
 
 
-            <Box sx={{ flexGrow: 1 }}>
-                <AppBar position="static" color='secondary'>
+            <Box sx={{ flexGrow: 1, bgcolor: 'secondary.main' }}>
+                <AppBar position="static" color='secondary' sx={{ bgcolor: 'secondary.dark' }}>
                     <Toolbar>
                         <IconButton
                             size="large"
@@ -84,6 +86,16 @@ const Navbar = (props) => {
                                 BlogYou
                             </Link>
                         </Typography>
+
+                        {/* Switching between light and dark version */}
+                        {
+                            maintheme ? <DarkModeIcon sx={{ cursor: 'pointer' }} onClick={() => setMaintheme(false)} /> : <LightModeIcon sx={{ cursor: 'pointer' }} onClick={() => setMaintheme(true)} />
+                        }
+
+
+
+
+                        {/* -------------------------------- */}
 
                         <Link to='/addblog'>
                             <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: disaddblog }}>Add your blog</Button>

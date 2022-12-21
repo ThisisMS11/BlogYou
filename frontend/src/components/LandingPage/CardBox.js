@@ -6,6 +6,7 @@ import documentContext from '../context/documents/documentContext.js';
 import Navbar from '../Navbar';
 import Spinner from '../Utility_Components/Spinner';
 import userContext from '../context/Users/userContext.js';
+// import MySelf from './MySelf';
 
 const CardBox = () => {
 
@@ -29,7 +30,7 @@ const CardBox = () => {
         }
     }, [])
 
-    
+
     useEffect(() => {
         GetAllCards();
     }, [])
@@ -50,7 +51,9 @@ const CardBox = () => {
 
         <>
             {loading && <Spinner />}
+
             <Navbar dissavedocument={'none'} />
+            {/* <MySelf /> */}
             <Grid container spacing={2} sx={{ padding: '15px 0px' }}>
                 {/* iterating the cards here */}
 
@@ -65,7 +68,7 @@ const CardBox = () => {
 
             </Grid >
 
-            <button onClick={showmethecards}>click me to get cards</button>
+            {/* <button onClick={showmethecards}>click me to get cards</button> */}
         </>
 
     )

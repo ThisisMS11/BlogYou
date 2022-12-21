@@ -10,7 +10,8 @@ Now the task that are remaining are the following:
 > 3. I will hide the quill toolbar and display the article editor just like the way it is visible now and that will probably do the job.
 
 Next Work:-
-2. Delete and update the blogcard work.
+3. Light and Dark Mode to be executed
+2. Delete and update the blogcard work. // last work to be done for sure.
 1. On saving the blogcard for the blog I want to blog to be removed from the 
 edit the blogcard will simply be used to edit the blog so no place for blogcard editing so far.
 
