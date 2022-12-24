@@ -16,6 +16,10 @@ import LoadingBar from 'react-top-loading-bar'
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
 
+import jwt_decode from "jwt-decode"
+const clientID = "177356393773-mt2t9d2ehek21ln45r1e7u0n75p13dk1.apps.googleusercontent.com";
+
+
 const Navbar = (props) => {
     let { disaddblog, dissavedocument, disavatar } = props;
 
@@ -32,14 +36,14 @@ const Navbar = (props) => {
     const navigate = useNavigate();
     const handlelogout = () => {
         localStorage.removeItem('token');
-        localStorage.removeItem('userID')
-        navigate('/login');
+        localStorage.removeItem('userID');
+        localStorage.removeItem('userinfo');
     }
 
     // Fetching the user notes here.
     const context = useContext(userContext);
     const docContext = useContext(documentContext);
-    let { maintheme, setMaintheme } = context;
+    let { maintheme, setMaintheme, HandleSignup, GetUserInfo, user, setUser, GiveTokenClient, tokenClient, setTokenClient } = context;
 
 
     const handleMyBlogs = async () => {
@@ -52,6 +56,11 @@ const Navbar = (props) => {
     let { blogcardmodalref, check2, saveasdraftref } = docContext;
     const handlecreatecard = () => {
         console.log(check2)
+        // here i can call the accesstoken method
+
+        // GiveTokenClient();
+
+
         blogcardmodalref.current.click();
     }
 
@@ -63,6 +72,87 @@ const Navbar = (props) => {
 
         navigate('/mydrafts')
     }
+
+
+    //! <---------------------------------------Google Authentication Stuff------------------------------>
+
+    const [pic, setPic] = useState([]);
+
+
+    const handlecallback = async (response) => {
+        console.log("Encoded JWT ID token:", response.credential);
+
+        const userObject = jwt_decode(response.credential)
+
+        let result = await HandleSignup(userObject);
+        // console.log('result = ', result)
+
+        let useridsetresult = await GetUserInfo(result);
+
+        if (useridsetresult) {
+            console.log("User Id set successfully in localStorage. Thanks .")
+        }
+
+
+        console.log(userObject);
+        setUser(userObject);
+        setPic(userObject.picture)
+
+        const jsonUserObject = JSON.stringify(userObject);
+
+        localStorage.setItem('userinfo', jsonUserObject);
+
+        // ! to remove the login button after successful login
+        // document.getElementById("signInDiv").hidden = true;
+
+
+
+
+        //* It will set a token client for us get a access token
+        GiveTokenClient();
+    }
+
+    const loadUserFromStorage = () => {
+        try {
+            const serializedState = localStorage.getItem('userinfo');
+            if (serializedState === null) {
+                return undefined;
+            }
+            return JSON.parse(serializedState);
+        } catch (e) {
+            return undefined;
+        }
+    };
+
+    useEffect(() => {
+        // this commment is important for react to know that google does exist in our react app.
+
+        /* global google */
+        // or
+        if (!localStorage.getItem('userinfo')) {
+            const google = window.google;
+
+            google.accounts.id.initialize({
+                client_id: clientID,
+                callback: handlecallback
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("GoogleAuth"),
+                { theme: "outline", size: "large", type: "icon", shape: 'circle' },
+            );
+
+            google.accounts.id.prompt();
+
+        }
+        else {
+            let myself = loadUserFromStorage();
+            setPic(myself.picture)
+        }
+    
+    }, [user, pic])
+
+
 
     return (
 
@@ -97,39 +187,50 @@ const Navbar = (props) => {
 
                         {/* -------------------------------- */}
 
-                        <Link to='/addblog'>
-                            <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: disaddblog }}>Add your blog</Button>
-                        </Link>
-
-                        <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: dissavedocument }} onClick={handlecreatecard}>Save Blog</Button>
 
 
-                        <Avatar sx={{
-                            bgcolor: 'grey',
-                            cursor: 'pointer',
-                            "&:hover": { backgroundColor: "#AAA6AD" }, display: disavatar
-                        }} aria-controls={open ? 'basic-menu' : undefined}
-                            aria-haspopup="true"
-                            aria-expanded={open ? 'true' : undefined}
-                            onClick={handleClick}
-                        >MS
-                        </Avatar>
-                        <Menu
-                            id="basic-menu"
-                            anchorEl={anchorEl}
-                            open={open}
-                            onClose={handleClose}
-                            MenuListProps={{
-                                'aria-labelledby': 'basic-button',
-                            }}
-                        >
-                            <MenuItem onClick={handleClose}>Profile</MenuItem>
-                            <MenuItem onClick={handleMyBlogs}>My Blogs Cards</MenuItem>
-                            <MenuItem onClick={handleMyDrafts}>My Drafts</MenuItem>
+                        {!localStorage.getItem('userinfo') ? <div className=' border-white rounded-md p-2 ml-4' id='GoogleAuth'></div> :
+                            <div className='flex'>
+                                <Link to='/addblog'>
+                                    <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: disaddblog }}>Add your blog</Button>
+                                </Link>
 
-                            {localStorage.getItem('token') ? <MenuItem onClick={handlelogout}>Logout</MenuItem> : <div></div>}
+                                <Button color="inherit" sx={{ border: 'solid 2px white', marginX: 2, display: dissavedocument }} onClick={handlecreatecard}>Save Blog</Button>
 
-                        </Menu>
+
+                                <Avatar sx={{
+                                    bgcolor: 'grey',
+                                    cursor: 'pointer',
+                                    "&:hover": { backgroundColor: "#AAA6AD" }, display: disavatar
+                                }} aria-controls={open ? 'basic-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open ? 'true' : undefined}
+                                    onClick={handleClick}
+                                >
+                                    <img src={pic} alt="image not found" />
+
+                                </Avatar>
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorEl}
+                                    open={open}
+                                    onClose={handleClose}
+                                    MenuListProps={{
+                                        'aria-labelledby': 'basic-button',
+                                    }}
+                                >
+                                    <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                    <MenuItem onClick={handleMyBlogs}>My Blogs Cards</MenuItem>
+                                    <MenuItem onClick={handleMyDrafts}>My Drafts</MenuItem>
+
+                                    {localStorage.getItem('userinfo') ? <MenuItem onClick={handlelogout}>Logout</MenuItem> : <div></div>}
+
+                                </Menu>
+
+
+
+                            </div>}
+
 
                     </Toolbar>
                 </AppBar>

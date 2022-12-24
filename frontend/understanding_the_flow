@@ -8,3 +8,9 @@ on clicking on "save drafts" the document will be updated with the content added
 
 
 myblogs is replaced by blogwithid
+
+
+
+//Access Token flow 
+<-------Navbar-------------><---------BlogCardModa------->
+Login => setTokenClient  =>  setTokenClient.requestAccesstoken();

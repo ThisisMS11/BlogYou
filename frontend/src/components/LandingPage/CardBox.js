@@ -23,11 +23,11 @@ const CardBox = () => {
         let token = localStorage.getItem('token');
         // console.log('token inside cardbox = ', token);
 
-        if (!token) {
-            // console.log('token at cardbox ' + token );
+        // if (!token) {
+        //     // console.log('token at cardbox ' + token );
 
-            navigate('/login');
-        }
+        //     navigate('/login');
+        // }
     }, [])
 
 

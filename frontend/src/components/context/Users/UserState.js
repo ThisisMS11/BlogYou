@@ -15,11 +15,23 @@ const UserState = (props) => {
     const [progress, setprogress] = useState();
 
     // for the spinner progress
-    const [loading, setLoading] = useState(null)
+    const [loading, setLoading] = useState(null);
+
+    //! Logged In User State is here
+    const [user, setUser] = useState([]);
 
 
+    // ! Google Stuff for Card modal
 
+    const [accessToken, setAccessToken] = useState([]);
+    const [tokenClient, setTokenClient] = useState({});
+    const google = window.google;
 
+    const clientID = "177356393773-mt2t9d2ehek21ln45r1e7u0n75p13dk1.apps.googleusercontent.com";
+    const SCOPES = "https://www.googleapis.com/auth/drive";
+    const developerKey = "AIzaSyDKH9fgVU2p26eabmHdJffvi1hjkeL2Ad4";
+
+    //! HandleLogin is not useful any more.
     const HandleLogin = async (userinfo) => {
         setLoading(true);
         const response = await fetch("http://localhost:1983/api/auth/login", {
@@ -53,9 +65,9 @@ const UserState = (props) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                username: newuserinfo.username,
+                username: newuserinfo.name,
                 email: newuserinfo.email,
-                password: newuserinfo.password, displayname: newuserinfo.displayname
+                userID: newuserinfo.sub
             })
         });
 
@@ -63,22 +75,21 @@ const UserState = (props) => {
         // setprogress(80)
         const json = await response.json();
 
+        console.log('our google user json ', json);
+
         // saving the authtoken
         if (json.success) {
             console.log("Signup successful");
 
-
-
-            // giving some delay time as this function is not waiting for the token to get stored in localstorage and navigates to '/'.
-
-            setTimeout(() => {
-                localStorage.setItem('token', json.authtoken);
-            }, 500);
+            localStorage.setItem('token', json.authtoken);
 
         }
         // setprogress(100)
         setLoading(false);
-        return json.success;
+
+
+
+        return json.authtoken;
     }
 
     const GetUserInfo = async (authtoken) => {
@@ -134,9 +145,34 @@ const UserState = (props) => {
     }
 
 
+    const GiveTokenClient = () => {
+
+        setTokenClient(
+            google.accounts.oauth2.initTokenClient({
+                client_id: clientID,
+                scope: SCOPES,
+                callback: (tokenResponse) => {
+                    // we now have a live token to use for any google api.
+
+
+                    if (tokenResponse && tokenResponse.access_token) {
+
+                        // console.log("access_token inside imageupload ", tokenResponse.access_token);
+                        setAccessToken(tokenResponse.access_token);
+
+
+                    }
+
+                    // console.log('tokenResponse inside useefect : ', tokenResponse.access_token);
+                }
+            })
+        );
+    }
+
+
 
     return (
-        <userContext.Provider value={{ HandleLogin, HandleSignup, GetUserInfo, GetUserBlogs, userblogs, setUserblogs, blogwithid, setBlogwithid, GetBlogwithID, progress, setprogress, loading, setLoading, maintheme, setMaintheme }}>
+        <userContext.Provider value={{ HandleLogin, HandleSignup, GetUserInfo, GetUserBlogs, userblogs, setUserblogs, blogwithid, setBlogwithid, GetBlogwithID, progress, setprogress, loading, setLoading, maintheme, setMaintheme, user, setUser, accessToken, setAccessToken, tokenClient, setTokenClient, clientID, developerKey, GiveTokenClient }}>
             {props.children}
         </userContext.Provider>
     )

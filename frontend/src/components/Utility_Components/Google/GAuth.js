@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Navbar from '../../Navbar'
 import jwt_decode from "jwt-decode"
-import { json } from 'react-router';
 
 const clientID = "177356393773-mt2t9d2ehek21ln45r1e7u0n75p13dk1.apps.googleusercontent.com";
 
@@ -10,8 +9,8 @@ const GAuth = () => {
     const [user, setUser] = useState(null);
 
     const SCOPES = "https://www.googleapis.com/auth/drive";
-
     const [tokenClient, setTokenClient] = useState({});
+
 
 
 
@@ -92,6 +91,7 @@ const GAuth = () => {
     }, []);
 
 
+    console.log('tokenClient = > ',tokenClient);
 
 
     return (
@@ -112,9 +112,9 @@ const GAuth = () => {
                 <h2>Welcome, {user.name}!</h2>
                 <img src={user.picture} alt="image not found" />
 
-                <input type="submit" onClick={createDrivefile} />
             </div>}
 
+                <input type="submit" onClick={createDrivefile} />
         </>
     )
 }

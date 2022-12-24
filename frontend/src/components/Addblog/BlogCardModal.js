@@ -15,6 +15,7 @@ import KeyboardArrowDown from '@mui/icons-material/KeyboardArrowDown';
 
 import documentContext from '../context/documents/documentContext';
 import useDrivePicker from 'react-google-drive-picker';
+import userContext from '../context/Users/userContext';
 
 
 
@@ -23,6 +24,9 @@ export default function BlogCardModal(props) {
 
     const docContext = useContext(documentContext);
     let { blogcardmodalref, SaveBlogCard, saveblogwithcardsubmitref } = docContext;
+
+    const context = useContext(userContext);
+    let { accessToken, tokenClient, clientID, developerKey } = context;
 
 
     const [blogcardinfo, setBlogcardinfo] = useState({ userID: "", blogID: "", title: "", description: "", thumbnailurl: "", tag: "" })
@@ -37,20 +41,28 @@ export default function BlogCardModal(props) {
     const { id } = useParams();
 
 
+    //! <-----------------------------------------------------Token Work----------------------------------------->
+
 
     const imageupload = () => {
+
+
+
+        console.log("access_token inside imageupload ", accessToken);
 
         // for closing the modal
         setModaldis('none')
 
+
+        // ! this will open a google file picker with access token set at the time of login.
         openPicker({
-            clientId: "177356393773-nl4q6rhgd65f6049oh5q8enmsqoqecqm.apps.googleusercontent.com",
-            developerKey: "AIzaSyDKH9fgVU2p26eabmHdJffvi1hjkeL2Ad4",
-            token: "ya29.a0AX9GBdXtbSxoRIMXYJuK70xTLmXkzWAbUUxjbsC8kJsyu0YBpiz190yKPeLCcuVLdh1Wykbh-BeePIvAC_RE99WkMGXGkXB6_zRdRyNX5hkwu2wtOxb6wDqUNetz0xtcpfX47nrYWQZKscEYHYEy0dYaWQ-_aCgYKAdsSAQ8SFQHUCsbC1X-63dwBZji2yC9GRMqv7w0163", 
-            viewId: "DOCS",
+            clientId: clientID,
+            developerKey: developerKey,
+            token: accessToken,
+            viewId: "DOCS_IMAGES",
             showUploadView: true,
             showUploadFolders: true,
-            setParentFolder: "1-CFP7V3F65CuZg2UhQsLs37oTObtGXv5",
+            // setParentFolder: "1-CFP7V3F65CuZg2UhQsLs37oTObtGXv5",
             disableDefaultView: true,
             supportDrives: true,
             multiselect: false,
@@ -90,6 +102,9 @@ export default function BlogCardModal(props) {
 
     useEffect(() => {
         setBlogcardinfo({ ...blogcardinfo, userID: localStorage.getItem('userID'), blogID: id })
+
+
+        tokenClient.requestAccessToken();
     }, [])
 
 

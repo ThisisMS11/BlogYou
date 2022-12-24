@@ -3,8 +3,6 @@ require('dotenv').config();
 const express = require('express');
 const User = require('../models/User.js');
 
-const { body, validationResult } = require('express-validator');
-
 const router = express.Router();
 
 const bcrypt = require('bcryptjs');
@@ -12,60 +10,64 @@ var jwt = require('jsonwebtoken');
 
 const fetchuser = require('../middlewares/fetchuser')
 
-
-// ! secret
-// const JWT_SECRET = "MohitBlog";
 const JWT_SECRET = process.env.JWT_SECRET;
 
-router.post('/register', [
-    body('username', 'Enter a valid name').isLength({ min: 5 }),
-    body('email', 'Enter a valid email').isEmail(),
-    body('password', 'Enter at least a 5 character password').isLength({ min: 5 })
-], async (req, res) => {
+router.post('/register', async (req, res) => {
 
-    const errors = validationResult(req);
-    let success = false;
+    const currentTime = new Date();
+    const localtime = currentTime.toLocaleString();
 
-    /* this will come in if there are some errors regarding our user inputs.*/
+    const { username, userID, email } = req.body;
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ success, errors: errors.array() });
-    }
+    let lastloginUser = {};
 
     try {
         let user = await User.findOne({ email: req.body.email });
 
         if (user) {
-            res.status(404).send("Account with the similar emial id already exists.");
-        }
 
-        // !Creating the webtoken from here on.
-        // generating the salt to make our password even more stronger
-        const salt = await bcrypt.genSalt(10);
+            if (userID) { lastloginUser.userID = userID }
+            if (username) { lastloginUser.username = username }
+            if (email) { lastloginUser.email = email }
 
-        // generating the hash from the password.
-        const secPass = await bcrypt.hash(req.body.password, salt);
 
-        // ! this is the part where we are adding user information into database
-        user = await User.create({
-            userID: req.body.userID,
-            username: req.body.username,
-            email: req.body.email,
-            displayname: req.body.displayname,
-            password: secPass
-        });
+            lastloginUser.LastLoginTime = localtime;
 
-        // !The data to be used in signing our web token is here
+            lastloginUser = await User.findByIdAndUpdate(user.id, { $set: lastloginUser }, { new: true })
 
-        const data = {
-            user: {
-                id: user.id
+            let data2 = {
+                user: {
+                    id: user.id
+                }
             }
+            const authtoken = jwt.sign(data2, JWT_SECRET);
+
+            res.json({ success: true, result: "User Info updated", lastloginUser, authtoken})
         }
 
-        // ! Signing the web token with payload and our secret code.
-        const authtoken = jwt.sign(data, JWT_SECRET);
-        res.json({ success: true, authtoken });
+
+        else {
+            // ! this is the part where we are adding user information into database
+            user = await User.create({
+                userID: userID,
+                username: username,
+                email: email,
+                LastLoginTime: localtime
+            });
+
+            // !The data to be used in signing our web token is here
+            const data = {
+                user: {
+                    id: user.id
+                }
+            }
+
+            // ! Signing the web token with payload and our secret code.
+            const authtoken = jwt.sign(data, JWT_SECRET);
+            res.json({ success: true, authtoken });
+        }
+
+
 
     } catch (error) {
         console.log(error);
@@ -73,19 +75,11 @@ router.post('/register', [
     }
 })
 
-router.post('/login', [
-    body('email', 'Enter a valid email').isEmail(),
-    body('password', 'Cannot enter a blank password').exists()
-], async (req, res) => {
+router.post('/login', async (req, res) => {
 
-    const errors = validationResult(req);
     let success = false;
 
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
-    const { email, password } = req.body;
+    const { email, password, sub } = req.body;
 
     try {
 
@@ -130,8 +124,8 @@ router.post('/login', [
 
 router.get('/userinfo', fetchuser, async (req, res) => {
     // res.json({ success: true, authtoken })
-    let success=true;
-    
+    let success = true;
+
     try {
         const userId = req.user.id;
         // All data except the user password is getting selected here
@@ -140,7 +134,7 @@ router.get('/userinfo', fetchuser, async (req, res) => {
         res.json({ success: true, user });
 
     } catch (error) {
-        success=false;
+        success = false;
         console.log(error);
         res.json({ success: false, error });
     }
